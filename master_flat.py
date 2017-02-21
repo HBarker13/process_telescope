@@ -48,15 +48,15 @@ for nightnum in range(1,4):
 			elif filtername=='B': filtername = 'R'
 			elif filtername=='V': filtername = 'I'
 			elif filtername=='R': filtername = 'RGdelta50'
-			elif filtername=='I': filtername = 'Bezzel_z'
+			elif filtername=='I': filtername = 'Besselz'
 		
 		print 'Filter', filtername
 		
 		#filename the master flat will be saved to
 		savepath = master_dir + '/Night'+str(nightnum) + '_masterflat_' + filtername+'.fits'
 		
-		#if os.path.exists(savepath):
-		#	continue
+		if os.path.exists(savepath):
+			continue
 			 
 		
 		#start with an empty flat array, and sum the arrays in each flat file
