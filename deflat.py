@@ -31,7 +31,7 @@ if not os.path.exists(combined_I_fpath):
 	master = fits.open( master_flat_dir+'/Night3_masterflat_I.fits')
 	master_3 = np.array( master[0].data )
 	
-	summed = np.add(master_1, master3)
+	summed = np.add(master_1, master_3)
 	newimg = np.divide(summed, 2)
 	copied[0].data = newimg
 	copied.flush()

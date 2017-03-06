@@ -29,6 +29,10 @@ if not os.path.exists(master_dir):
 	os.makedirs(master_dir)
 
 
+#expected dimensions of the flat arrays
+len0 = 2148
+len1 = 2148
+
 
 #loop through each night
 for nightnum in range(1,4):
@@ -69,7 +73,10 @@ for nightnum in range(1,4):
 			print 'Try overscan_correct.py, debias.py'
 			import sys
 			sys.exit()
-			
+		
+		
+		"""
+		#make the master flat by calculating the mean	
 		counter = 0
 		for flat in flat_fpaths:
 			open_flat = fits.open(flat)
@@ -88,6 +95,35 @@ for nightnum in range(1,4):
 		#divide the calculated master_bias array by the total number of biases
 		#ie. calculate the mean for each pixel
 		master_flat = np.divide( np.array(summed_flat), counter)
+		"""
+		
+		
+		#make the master flat by calculating the median
+		
+		#make a list for each pixel
+		holder = [ [ [] for y in xrange(len0)] for x in xrange(len1)]
+
+		#loop through the flat frames and add to the list of values for each pixel
+		for num, flat in enumerate(flat_fpaths):
+	
+			print 'Flat frame', num+1, '/', len(flat_fpaths)
+	
+			open_flat = fits.open(flat)
+			flat_data = open_flat[0].data
+			open_flat.close()
+		
+			for i in range(len1):
+				for j in range(len0):
+					holder[i][j].append(flat_data[i][j])
+
+		#loop through each pixel in the holder and find the median for each list
+		master_flat = [ [ [] for y in xrange(len0)] for x in xrange(len1)]
+	
+		for i in range(len1):
+			for j in range(len0):
+				median = np.median( holder[i][j] )
+				master_flat[i][j] = median
+		
 			
 		
 		#save the master flat

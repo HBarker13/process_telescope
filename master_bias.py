@@ -26,8 +26,6 @@ master_bias = []
 
 for night in night_dirs:
 	
-	#start with empty array for the bias for each night
-	summed_bias = []
 	
 	#use overscan corrected bias files
 	bias_fpaths = glob.glob(night+'/*ovscorr.fits')
@@ -37,6 +35,41 @@ for night in night_dirs:
 		import sys
 		sys.exit()
 		
+	
+	#calculate the median
+	
+	#make a list for each pixel
+	holder = [ [ [] for y in xrange(len0)] for x in xrange(len1)]
+
+	#loop through the bias frames and add to the list of values for each pixel
+	for num, bias in enumerate(bias_fpaths):
+	
+		print 'Bias frame', num+1, '/', len(bias_fpaths)
+	
+		open_bias = fits.open(bias)
+		bias_data = open_bias[0].data
+		open_bias.close()
+		
+		for i in range(len1):
+			for j in range(len0):
+				holder[i][j].append(bias_data[i][j])
+
+	#loop through each pixel in the holder and find the median for each list
+	master_bias = [ [ [] for y in xrange(len0)] for x in xrange(len1)]
+	
+	for i in range(len1):
+		for j in range(len0):
+			median = np.median( holder[i][j] )
+			master_bias[i][j] = median
+		
+		
+		
+		
+	"""	
+	#calculate the mean
+	
+	#start with empty array for the bias for each night
+	summed_bias = []
 	
 	counter = 0
 	for bias in bias_fpaths:
@@ -65,13 +98,18 @@ for night in night_dirs:
 	#divide the calculated master_bias array by the total number of biases
 	#ie. calculate the mean for each pixel
 	#divisor_arr = np.full( (x_len, y_len), float(counter) )
-	master_bias = np.divide( np.array(summed_bias), counter)
+	mean_bias = np.divide( np.array(summed_bias), counter)
+	
+	#check the difference between the mean and meadian biases
+	diff = np.subtract(mean_bias, master_bias)
+	"""
+	
 	
 
 	#save the master_bias as a new fits file
 	savename = night+'/master_bias.fits'
 	hdu = fits.PrimaryHDU(master_bias)
-	hdu.writeto(savename)
+	hdu.writeto(savename, clobber=True)
 	print 'Saved: ', savename
 	print
 
