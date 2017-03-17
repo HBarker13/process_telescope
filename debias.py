@@ -45,7 +45,7 @@ for night in night_dirs:
 			print 'No overscan corrected files found in ', dirname
 			print 'Try overscan_correct.py'
 			sys.exit()
-			
+
 		
 		#loop through the files in each directory
 		for fpath in fpaths:	

@@ -30,8 +30,8 @@ if not os.path.exists(master_dir):
 
 
 #expected dimensions of the flat arrays
-len0 = 2148
-len1 = 2148
+len0 = 2148 - 100 #50 pixels taken off each edge in trim.py
+len1 = 2148 - 100
 
 
 #loop through each night
@@ -117,17 +117,30 @@ for nightnum in range(1,4):
 					holder[i][j].append(flat_data[i][j])
 
 		#loop through each pixel in the holder and find the median for each list
+		#Normalise the master flat array (so the average pixel value is 1.0)
 		master_flat = [ [ [] for y in xrange(len0)] for x in xrange(len1)]
+		
+		median_sum = 0
+		pixel_num = 0
 	
 		for i in range(len1):
 			for j in range(len0):
 				median = np.median( holder[i][j] )
 				master_flat[i][j] = median
+				median_sum += median
+				pixel_num += 1
+				
+		#mean value of the masterflat pixels = sum / number of pixels
+		avg = median_sum / pixel_num
+				
+		#divide the master flat by this average 
+		normalised_master = np.divide( np.array(master_flat), avg)	
+				
 		
 			
 		
 		#save the master flat
-		hdu = fits.PrimaryHDU(master_flat)
+		hdu = fits.PrimaryHDU(normalised_master)
 		hdu.writeto(savepath)
 		print 'Saved: ', savepath	
 		

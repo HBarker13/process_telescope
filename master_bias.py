@@ -19,8 +19,8 @@ data_dir = '/mirror2/scratch/hbarker/Orsola_2.3m_ANU/Sorted/'
 night_dirs = glob.glob(data_dir+'/Night*/Bias')
 
 #expected dimensions of the bias arrays
-len0 = 2148
-len1 = 2148
+len0 = 2148-100 #50 pixels taken off each edge by trim.py
+len1 = 2148-100  
 
 master_bias = []
 
@@ -78,12 +78,6 @@ for night in night_dirs:
 		open_bias.close()
 		
 
-		#check the bias data has the correct dimensions: 2148 x 2148
-		if len(bias_data[0])!=len0 and len(bias_data[1])!=len1:
-			print 'Bias data wrong shape'
-			print bias
-			import sys
-			sys.exit()
 			
 		#sum all the arrays
 		if len(summed_bias)==0:
