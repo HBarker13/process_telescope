@@ -28,11 +28,8 @@ for fpath in fpaths:
 	if 'trim' in hdr:
 		continue
 	
-
-	#only keep the square of pixels around the circular aperture
-	#clipped = img_arr[ 445:1629, 461:1647 ]
 	
-	clipped = img_arr[50:len(img_arr[1])-50, 50:len(img_arr[0])-50 ] 
+	clipped = img_arr[70:len(img_arr[1])-70, 70:len(img_arr[0])-70 ] 
 
 	#save the corrected image to the fits file
 	openfile[0].data = clipped

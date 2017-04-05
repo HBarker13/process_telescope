@@ -30,8 +30,8 @@ if not os.path.exists(master_dir):
 
 
 #expected dimensions of the flat arrays
-len0 = 2148 - 100 #50 pixels taken off each edge in trim.py
-len1 = 2148 - 100
+len0 = 2148 - 140 #70 pixels taken off each edge in trim.py
+len1 = 2148 - 140
 
 
 #loop through each night

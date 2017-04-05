@@ -8,7 +8,7 @@ Makes newfiles with the format T2M3Im-yymmdd.time-00##_ovscorr.fits
 
 
 2. master_bias.py
-Reads in overscan corrected bais frames from each night and calculates the median value for each pixel, and saves this as a master bias.  (The mean can also be calculated)
+Reads in overscan corrected bais frames from each night and calculates the median value for each pixel, and saves this as a master bias. 
 
 
 3. debias.py
@@ -19,11 +19,18 @@ NB. debias.py removes the T2M3Im-yymmdd.time-00##_ovscorr.fits file. This can be
 
 
 4. master_flat.py
-Creates a master flat in each filter from the median of the overscan corrected, debiased flat files. NOTE: flat frames in each filter were not taken every night.
+Creates a master flat in each filter (per night) from the median of the overscan corrected, debiased flat files. NOTE: flat frames in each filter were not taken every night.
+
+Night1 flats: I, R and V band
+Night2 flats: U and B band
+Night 3: B, bessel z and I band
+
+The two I band master flats (nights 1 and 3) are combined into a single flat.
 
 
 5. deflat.py
-Flat-field corrects frames of with the matching filter (from any night).
+Flat-field corrects frames of with the matching filter (from any night). 
+
 
 
 

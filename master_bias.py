@@ -1,6 +1,6 @@
 #!/mirror/scratch/hbarker/pkgs/anaconda/bin/python
 
-"""script to create a master bias frame"""
+"""script to create a master bias frame using overscan corrected bias frames taken on the same night"""
 
 import os
 import glob
@@ -19,8 +19,8 @@ data_dir = '/mirror2/scratch/hbarker/Orsola_2.3m_ANU/Sorted/'
 night_dirs = glob.glob(data_dir+'/Night*/Bias')
 
 #expected dimensions of the bias arrays
-len0 = 2148-100 #50 pixels taken off each edge by trim.py
-len1 = 2148-100  
+len0 = 2148-140 #70 pixels taken off each edge by trim.py
+len1 = 2148-140  
 
 master_bias = []
 
