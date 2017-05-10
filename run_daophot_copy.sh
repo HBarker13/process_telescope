@@ -1,25 +1,24 @@
 #!/bin/bash
 #Run daophot photometry
 #needs to be run from the directory
-#when called by daophot wrapper:  $1 = frame number, $2=fwhm, $3=filepath
-
+#when called by daophot wrapper:  $1 = frame number, $2=fwhm
 
 
 # Get rid of any junk files which DAOPHOT has left lying around.
 rm -f *jnk.sdf	
 
-in_num=$1
-fwhm=$2
-f=$3
+#read in files
+fitsfiles=$PWD/*circletrim.fits
+
 
 #manual frame number input
-#echo "Enter frame number: "
-#read in_num
-#echo
+echo "Enter frame number: "
+read in_num
+echo
 
 #convert each fits file to a ndf file
-#for f in $fitsfiles
-#do
+for f in $fitsfiles
+do
 
 	#filenames are often too long and need shortening
 
@@ -64,20 +63,14 @@ f=$3
 	    
          
 	#Prompt user for FWHM in manual input
-	#echo -n "Enter the FWHM in pixels and press [ENTER]:"
-	#read fwhm
-	
+	echo -n "Enter the FWHM in pixels and press [ENTER]:"
+	read fwhm
+
 	
 	#bash can't handle non-integer math, need to use bc
 	fwhm2=$(echo $fwhm*2.0 | bc)
-	fwhm3=$(echo $fwhm*3.0 | bc)
 	fwhm4=$(echo $fwhm*4.0 | bc)
 	fwhm5=$(echo $fwhm*5.0 | bc)
-	fwhm6=$(echo $fwhm*6.0 | bc)
-	fwhm7=$(echo $fwhm*7.0 | bc)
-	fwhm8=$(echo $fwhm*8.0 | bc)
-	fwhm9=$(echo $fwhm*9.0 | bc)
-	fwhm10=$(echo $fwhm*10.0 | bc)
 	
 	
 #create fwhm commands to feed into daophot
@@ -100,12 +93,11 @@ f=$3
 	echo "READ=3.278" >> $daophot_opt
 	echo "GAIN=1.1" >> $daophot_opt
 	echo "TH=5.0" >> $daophot_opt
-	echo "AN=1" >> $daophot_opt          #1=Gaussian, 2=Moffat
+	echo "AN=1" >> $daophot_opt          #Gaussian
 	echo "LOWBAD=5" >> $daophot_opt
 	echo "HIBAD=50000" >> $daophot_opt
-	echo "WATCH=-1" >> $daophot_opt      #-1 non-interactive and the star is used anyway, but hopefully is removed by bad pixel rejection later on, 0 asks about stars with bad pixels, 1 needs manual input
-	echo "VAR=0" >> $daophot_opt        #0=fixed psf, 1=varies linearly with the position, 2=varies in degrees with position
-	echo "EX=5">> $daophot_opt #extra cleaning passes to remove bad pixels from psf tables
+	echo "WATCH=1" >> $daophot_opt      #0 uses all stars with no bad pixels, 1 needs manual input
+	echo "VAR=1" >> $daophot_opt        #0=fixed psf, 1=varies linearly with the position, 2=varies in degrees with position
 	
 	echo "Written " $daophot_opt
 	echo
@@ -131,14 +123,11 @@ f=$3
 	echo
 	
 	
-	inner_rad_allstar='IS='$fwhm
-	outer_rad_allstar='OS='$fwhm6
-	
 	allstar_opt=$PWD/allstar.opt
 	rm -f $allstar_opt
 	echo $fit_cmd >> $allstar_opt
-	echo $inner_rad_allstar >> $allstar_opt
-	echo $outer_rad_allstar >> $allstar_opt
+	echo $inner_rad >> $allstar_opt
+	echo $outer_rad >> $allstar_opt
 	echo "WATCH=1.0" >> $allstar_opt
 	echo "redet=1" >> $allstar_opt
 	
@@ -184,23 +173,51 @@ PICK
 $fileroot.ap
 50,25
 $fileroot.lst
-__DAOPHOT-END__
-
-
-#filter the lst file using a python script
-	python /mirror2/scratch/hbarker/Orsola_2.3m_ANU/scripts/filter_pick.py -f $fileroot -p $f
-
-
-echo 'Calculating PSF'
-#resume daophot with PSF
-	/star/bin/daophot/daophot <<__DAOPHOT-END__
-ATTACH $fileroot
-PSF
-$fileroot.ap
-$fileroot.lst
-$fileroot.psf
 EXIT
 __DAOPHOT-END__
+
+
+#PSF
+#$fileroot.ap
+#$fileroot.lst
+#$fileroot.psf
+#EXIT
+#__DAOPHOT-END__
+
+#	Run allstar
+#	/star/bin/daophot/allstar <<__ALLSTAR-END__
+#y
+#$fileroot
+#$fileroot.psf
+#$fileroot.ap
+#$fileroot.als
+#y
+#__ALLSTAR-END__
+	
+
+#	Sort als file by increasing x coordinate, not renumbering stars
+#/star/bin/daophot/daophot <<__SORT-END__
+#SORT
+#2
+#$fileroot.als
+#$fileroot.srt
+#$fileroot.srt
+#n
+#EXIT
+#__SORT-END__
+	
+
+#open the sorted file in gedit
+#/usr/bin/gedit $fileroot.srt
+	
+
+break
+
+done
+
+
+
+
 
 
 

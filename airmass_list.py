@@ -1,6 +1,6 @@
 #!/mirror/scratch/hbarker/pkgs/anaconda/bin/python
 
-""" Make a .txt file of airmasses and filenames for the standard stars."""
+""" Make a .txt file of airmasses and filenames for the standard and target stars."""
 
 import os
 import glob
@@ -16,18 +16,18 @@ night_dirs = glob.glob(data_dir+'/Night*')
 for night in night_dirs:
 	
 	#list of standard star directories
-	standard_dirs = glob.glob(night+'/st*')
+	dirnames = glob.glob(night+'/*')
 	
-	for standard in standard_dirs:
-		print standard
+	for obj in dirnames:
+		print obj
 	
 		#filename to save to
-		savepath = standard+'/airmasses.tab'
+		savepath = obj+'/airmasses.tab'
 		
 		tab = []
 		
 		#list of processed files
-		fpaths = glob.glob(standard+'/*ovscorr_debiased_deflat.fits')
+		fpaths = glob.glob(obj+'/*ovscorr_debiased_deflat.fits')
 		
 		for f in fpaths:
 		

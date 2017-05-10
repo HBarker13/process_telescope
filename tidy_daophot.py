@@ -23,4 +23,18 @@ for name in all_fnames:
 		
 	if name[-4:]=='.nei':
 		os.remove(name)
+		
+	if name[-4:]=='.als':
+		os.remove(name)
 	
+	if name[-4:]=='.psf':
+		os.remove(name)	
+		
+	if name[-5:]=='s.sdf':
+		os.remove(name)
+		
+	if name[-8:]=='sub.fits':
+		os.remove(name)
+		
+	if 'jnk' in name:
+		os.remove(name)			

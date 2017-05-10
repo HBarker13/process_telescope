@@ -1,12 +1,8 @@
 #!/mirror/scratch/hbarker/pkgs/anaconda/bin/python
 
 """Use a linear least-squares method to calculate observed magntiudes from instrumental magnitudes"""
-#NB. I've erronously used pn as a variable name instead of star. This script
-#processes data from standard STARS, not PN
-
+"""uses the table created by daophot_wrapper.py as input"""
  
-from pyexcel_ods import get_data
-import json
 import numpy as np
 from matplotlib import pyplot as plt 
 from scipy.optimize import curve_fit
@@ -35,54 +31,42 @@ def make_recarray(tab, title_list):
 
 #read in ods file with standard star magnitudes and airmasses
 working_dir = '/mirror2/scratch/hbarker/Orsola_2.3m_ANU'
-standard_fpath = working_dir + '/Standards.ods'
-
-#working_dir = '/mirror2/scratch/hbarker/Orsola_2.3m_ANU/Gaia_reduction'
-#standard_fpath = working_dir + '/Standard_stars.ods'
+standard_fpath = working_dir + '/wrapper_standard_mags.tab'
 
 if not os.path.exists(standard_fpath):
 	print 'File cannot be found'
 	print standard_fpath
 	sys.exit()
 
-
-all_data = get_data(standard_fpath)
-
-
-tab = dict()
 print 'Reading in data'
-for sheetname in all_data:
-	
-	if sheetname=='Overview':
-		continue	
-		
+with open(standard_fpath, 'r') as f:
+	in_tab = [line.strip().split("\t") for line in f]
 
-	pn_data = all_data[sheetname]
-	
 
-	#skip line[0], contains unnecessary titles
-	colnames = [val.encode('utf-8') for val in pn_data[1] ]
+#remove bad data and make recarray	
+colnames = in_tab[0]
+in_tab = in_tab[1:]
+in_data = [line for line in in_tab if line[4]!='Coords not found' ] 
+in_data = [line for line in in_data if line[4]!='Daophot failed' ] 
+in_data = [line for line in in_data if line[4]!='PSF failed' ]
 
-	
-	pn = pn_data[2:]
-	
-	
-	#skip any lines shorter than 12 (lines with a remove flag are 13)
-	cut_table = []
-	for line in pn:
-		if len(line)==len(colnames):
-			cut_table.append(line)
-			
-	
-	pn_arr = make_recarray(cut_table, colnames)
-	
-	
-	#remove rows witha  remove flag
-	pn_arr = pn_arr[ pn_arr['remove']!='x']
-	pn_arr = pn_arr[ pn_arr['remove']!='?']
-	
-		
-	tab[sheetname]=pn_arr
+
+rec_arr = make_recarray(in_data, colnames)
+print
+
+
+
+#put data into a dictionary, with target names as keys
+print 'Sorting'
+tab = dict()
+target_names = set(rec_arr['pn'])
+
+for target in target_names:
+	print target
+	target_data = [line for line in rec_arr if line[0]==target]
+	target_arr = make_recarray(target_data, colnames)
+	tab[target] = target_arr
+print
 	
 
 		
@@ -100,48 +84,51 @@ true_colours = { 'MCT2019': [12.185, 13.397, 13.685, 13.946], '111-1925':[13.045
 # Z = airmass
 # B-V is the colour on the standard system
 
-
+print 'Calculating transformation coefficients'
 filternames = ['U', 'B', 'V', 'I']
 nights = ['Night1', 'Night2', 'Night3']
 for night in nights:
+	print night
 	
 	for filtername in filternames:	
+		print filtername
 	
 		filter_data = []
-		for pn in tab:
+		for target in tab:
 		
 			
 			#get the 'true' observed mags from the Overview sheet
 			if filtername =='U':
-				true_mag = true_colours[pn][0]
-				colour = true_colours[pn][0] - true_colours[pn][1] #U-B
+				true_mag = true_colours[target][0]
+				colour = true_colours[target][0] - true_colours[target][1] #U-B
 				
 			elif filtername=='B':
-				true_mag = true_colours[pn][1]	
-				colour = true_colours[pn][1] - true_colours[pn][2] #B-V
+				true_mag = true_colours[target][1]	
+				colour = true_colours[target][1] - true_colours[target][2] #B-V
 				
 			elif filtername=='V':
-				true_mag = true_colours[pn][2]
-				colour = true_colours[pn][1] - true_colours[pn][2] #B-V
+				true_mag = true_colours[target][2]
+				colour = true_colours[target][1] - true_colours[target][2] #B-V
 				
 			elif filtername=='I':
-				true_mag = true_colours[pn][3]
-				colour = true_colours[pn][2] - true_colours[pn][3] #V-I	
+				true_mag = true_colours[target][3]
+				colour = true_colours[target][2] - true_colours[target][3] #V-I	
 			
 			
 	
 			#choose the correct night and filter
-			pn_mags = tab[pn]			
-			cut_mags = pn_mags[ pn_mags['Night']==night ] 
-			cut_mags = cut_mags[ cut_mags['Filter']==filtername ]
+			target_mags = tab[target]
+	
+			cut_mags = target_mags[ target_mags['night']==night ] 
+			cut_mags = cut_mags[ cut_mags['filter']==filtername ]
 
 			
 			if len(cut_mags)==0:
 				continue
 			
 			for line in cut_mags:
-				print pn, line['Filter'], line['Airmass'], line['mag']
-				filter_data.append( [line['Airmass'], line['mag'], line['mag_err'], true_mag, colour] )
+				print target, line['filter'], line['airmass'], line['mag']
+				filter_data.append( [ float(line['airmass']), float(line['mag']), float(line['mag_err']), true_mag, colour] )
 			print	
 				
 				 
@@ -198,6 +185,8 @@ for night in nights:
 		plt.xlabel('Airmass')
 		plt.title(night+','+filtername)
 		plt.show()
+		
+		print
 
 
  

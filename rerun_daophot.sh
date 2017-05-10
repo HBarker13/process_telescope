@@ -1,5 +1,5 @@
 #!/bin/bash
-#Run daophot photometry
+#Run daophot photometry: the same as run_daophot except with no FIND command
 #needs to be run from the directory
 #when called by daophot wrapper:  $1 = frame number, $2=fwhm, $3=filepath
 
@@ -53,14 +53,6 @@ f=$3
 #  Get filename without the .sdf extension.
 	extension="${filename##*.}"
 	fileroot="${filename%.*}"
-
-
-	# Get rid of any junk files which DAOPHOT has left lying around.
-	rm -f *jnk.sdf	 
-	rm -f "$fileroot.ap"
-	rm -f "$fileroot.coo"
-	rm -f "$fileroot.lst"
-	rm -f "$fileroot.psf"
 	    
          
 	#Prompt user for FWHM in manual input
@@ -154,17 +146,13 @@ f=$3
 
          
 #	start daophot
-	source /star/bin/daophot/daophot.csh
+#	source /star/bin/daophot/daophot.csh
 
 
 #  Run DAOPHOT with the appropriate commands. LEAVE UNINDENTED
 # For pick, I want 50 objects no fainter than 25 mags
 	/star/bin/daophot/daophot <<__DAOPHOT-END__
 ATTACH $fileroot
-FIND
-1,1
-$fileroot
-Y
 PHOT
 YES
 A1=3.0
@@ -179,6 +167,13 @@ $inner_rad
 $outer_rad
 YES
 $fileroot.coo
+2000
+2000
+3.278
+1.1
+5
+50000
+$fileroot.ap
 $fileroot.ap
 PICK
 $fileroot.ap
