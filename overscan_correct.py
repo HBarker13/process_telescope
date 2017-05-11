@@ -18,15 +18,15 @@ fpaths = [f for f in fpaths if 'ovscorr' not in f]
 
 
 for fpath in fpaths:
-	print fpath
+	#print fpath
 	
 	#copy file and rename it
 	newname, _ = fpath.rsplit('.fit')
 	newname = newname + '_ovscorr.fits'  #change to xxx_ovscorr.fits
 	
 	#skip any files that have already been corrected:
-	#if os.path.exists(newname):
-	#	continue
+	if os.path.exists(newname):
+		continue
 	
 	copyfile(fpath, newname)
 
@@ -46,7 +46,6 @@ for fpath in fpaths:
 
 	#subtract the mean from all pixels in the image
 	corrected_img = img_arr - ovsc_val
-	#trim the array to remove the overscan region?
 	
 	
 	#save the corrected image to the fits file
@@ -61,7 +60,9 @@ for fpath in fpaths:
 	openfile.flush()
 	openfile.close()
 	print 'Created: ', newname
-	print
+
+print
+print
 
 
 

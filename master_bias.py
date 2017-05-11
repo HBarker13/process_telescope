@@ -27,6 +27,10 @@ master_bias = []
 for night in night_dirs:
 	
 	
+	savename = night+'/master_bias.fits'
+	if os.path.exists(savename):
+		continue
+	
 	#use overscan corrected bias files
 	bias_fpaths = glob.glob(night+'/*ovscorr.fits')
 	if len(bias_fpaths)==0:
@@ -101,7 +105,6 @@ for night in night_dirs:
 	
 
 	#save the master_bias as a new fits file
-	savename = night+'/master_bias.fits'
 	hdu = fits.PrimaryHDU(master_bias)
 	hdu.writeto(savename, clobber=True)
 	print 'Saved: ', savename

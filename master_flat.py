@@ -71,8 +71,10 @@ for nightnum in range(1,4):
 		if len(flat_fpaths)==0:
 			print 'No overscan corrected, debiased flat files found'
 			print 'Try overscan_correct.py, debias.py'
-			import sys
-			sys.exit()
+			#import sys
+			#sys.exit()
+			raw_input('Press any key to continue')
+			continue
 		
 		
 		"""
@@ -136,7 +138,6 @@ for nightnum in range(1,4):
 		#divide the master flat by this average 
 		normalised_master = np.divide( np.array(master_flat), avg)	
 				
-		
 			
 		
 		#save the master flat
@@ -149,15 +150,7 @@ for nightnum in range(1,4):
 
 
 
-
-
-
-
-
-
-
-
-
+#the combined I band master flat is made in deflat.py
 
 
 

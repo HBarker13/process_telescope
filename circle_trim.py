@@ -43,6 +43,9 @@ for fpath in fpaths:
 	"""
 	
 	newname = fpath[:-5]+'_circletrim.fits'
+	if os.path.exists(newname):
+		continue
+		
 	copyfile(fpath, newname)
 	openfile = fits.open(newname, mode='update')
 	hdr = openfile[0].header

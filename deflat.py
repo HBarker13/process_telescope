@@ -60,8 +60,7 @@ for master_flat in master_fpaths:
 	elif filtername=='B': master_b = master_arr
 	elif filtername=='V': master_v = master_arr
 	elif filtername=='R': master_r = master_arr
-	elif filtername=='Bessellz': master_bessell_z = master_arr
-	
+	elif filtername=='Bessellz': master_bessell_z = master_arr	
 
 		
 	

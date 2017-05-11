@@ -12,8 +12,11 @@ from shutil import copyfile
 data_dir = '/mirror2/scratch/hbarker/Orsola_2.3m_ANU/Sorted/'
 night_dirs = glob.glob(data_dir+'/Night*')
 
+
+
 #loop through the nights
 for night in night_dirs:
+
 	
 	#check there is a master bias
 	bias_fpath = night+'/Bias/master_bias.fits'
@@ -23,6 +26,8 @@ for night in night_dirs:
 		print 'Try master_bias.py'
 		sys.exit()
 		
+		
+		
 	#read in the master bias	
 	master_bias = fits.open(bias_fpath)
 	bias = np.array(master_bias[0].data)
@@ -30,11 +35,13 @@ for night in night_dirs:
 	print 'Read in ', bias_fpath
 
 
+
 	#list all the files that need de-biasing (all except the bias directory)
 	img_dirs = glob.glob(night+'/*')
 	img_dirs = [dirpath for dirpath in img_dirs if 'Bias' not in dirpath and 'README' not in dirpath]
 	
-
+	
+	
 	#loop though the files
 	for dirname in img_dirs:
 		
@@ -45,6 +52,7 @@ for night in night_dirs:
 			print 'No overscan corrected files found in ', dirname
 			print 'Try overscan_correct.py'
 			#sys.exit()
+			raw_input('Press any key to continue')
 			continue
 
 		
@@ -58,6 +66,9 @@ for night in night_dirs:
 			
 			#skip if the debiased file already exists
 			if os.path.exists(newname):
+				#delete the old file
+				if os.path.exists(fpath):
+					os.remove(fpath)
 				continue
 			
 			copyfile(fpath, newname)
@@ -72,7 +83,9 @@ for night in night_dirs:
 				print 'Master bias: ', len(bias[0]), len(bias[1])
 				print fpath
 				print len(img[0]), len(img[1])
-				sys.exit()
+				#sys.exit()
+				raw_input('Press to continue')
+				continue
 			
 			#subtract the bias from the image
 			debiased = np.subtract(img, bias)
