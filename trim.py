@@ -25,7 +25,8 @@ for fpath in fpaths:
 	img_arr = np.array(img)
 	
 	#skip if there is header flag that the frame has already been trimmed
-	if 'trim' in hdr:
+	if 'TRIM' in hdr:
+		openfile.close()
 		continue
 	
 	

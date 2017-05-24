@@ -122,23 +122,31 @@ for nightnum in range(1,4):
 		#Normalise the master flat array (so the average pixel value is 1.0)
 		master_flat = [ [ [] for y in xrange(len0)] for x in xrange(len1)]
 		
-		median_sum = 0
-		pixel_num = 0
+		median_sum = 0.0
+		pixel_num = 0.0
 	
 		for i in range(len1):
 			for j in range(len0):
+			
 				median = np.median( holder[i][j] )
 				master_flat[i][j] = median
-				median_sum += median
-				pixel_num += 1
+				
+				#calculate the average value only from pixels
+				#in a square in the region we care about.
+				#Had to brute force it instead
+	
+				if median>1000:
+					median_sum += median
+					pixel_num += 1.0
 				
 		#mean value of the masterflat pixels = sum / number of pixels
 		avg = median_sum / pixel_num
+		
+		print avg
 				
 		#divide the master flat by this average 
 		normalised_master = np.divide( np.array(master_flat), avg)	
-				
-			
+
 		
 		#save the master flat
 		hdu = fits.PrimaryHDU(normalised_master)

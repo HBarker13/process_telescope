@@ -22,11 +22,14 @@ for fpath in fpaths:
 	
 	#copy file and rename it
 	newname, _ = fpath.rsplit('.fit')
+	debias_name = newname + '_ovscorr_debiased.fits'
 	newname = newname + '_ovscorr.fits'  #change to xxx_ovscorr.fits
 	
 	#skip any files that have already been corrected:
 	if os.path.exists(newname):
 		continue
+	if os.path.exists(debias_name):
+		continue	
 	
 	copyfile(fpath, newname)
 

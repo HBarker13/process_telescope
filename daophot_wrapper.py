@@ -65,13 +65,13 @@ fintab = []
 
 
 start = time.time()
-#loop over the sheets (named after the standard stars)
+#loop over the sheets (named after the standard stars/PN)
 for sheetname in info:
 	
 	if sheetname=='Overview':
 		continue
 
-		
+
 
 	print sheetname	
 	star_data = info[sheetname]
@@ -84,7 +84,7 @@ for sheetname in info:
 	
 	#loop over each entry in the sheet. ie. loop of info of each frame
 	for line in data_arr:
-		
+	
 
 		#clear daophot junk
 		print 'Calling tidy_daophot.py'
@@ -92,7 +92,6 @@ for sheetname in info:
 	
 	
 		print 'Frame', line['Filename']
-
 
 	
 		#use the info to get to the correct directory and file
@@ -279,13 +278,15 @@ for sheetname in info:
 
 		#find the star with the nearest coordinates in the mags_list to get magnitudes
 		standard_line = mags_list[ nearest[0]]
-		
+
 
 		#calculate the "normalised" magnitude, ie. take out the exposure time	
-		counts = 10**( float(standard_line[3]) / 2.5 ) * float(line['Exp_time'])
-		norm_mag = 2.5*math.log10(counts)
+		raw_counts = 10**( float(standard_line[3])/2.5 )
+		norm_counts = raw_counts / float(line['Exp_time'])
+		norm_mag = 2.5*math.log10(norm_counts)
+
 		
-		err_count = 10**( ( float(standard_line[3])+float(standard_line[4]) ) / 2.5 ) * float(line['Exp_time'])
+		err_count = 10**( ( float(standard_line[3])+float(standard_line[4]) ) / 2.5 ) / float(line['Exp_time'])
 		norm_err = 2.5*math.log10(err_count) - norm_mag
 		
 		
@@ -293,6 +294,7 @@ for sheetname in info:
 		#pn, night, frame number, exposure time, daophot mag, daophot err, normal mag, normal err
 		newline = [sheetname, line['Night'], line['Filename'], line['Filter'],  line['Exp_time'], line['Airmass'], standard_line[3], standard_line[4], norm_mag, norm_err]
 		fintab.append(newline)
+		print newline
 		print 'Line added'
 		print
 		print
@@ -301,8 +303,8 @@ for sheetname in info:
 		print
 		
 		
-	
-	
+
+
 #save the table to file
 print 'Saving'
 if type_choice=='s': fin_fpath = working_dir + '/wrapper_standard_mags.tab'
@@ -318,11 +320,11 @@ with open(fin_fpath, 'w+') as f:
 		print_line+='\n'
 		f.write(print_line)	
 
-
-
 print 'File written'
 print fin_fpath
 print
+
+
 print 'star	night	frame_number	filter	exposure_time	airmass	daophot_mag	daophot_err	mag	mag_err'
 for l in fintab:
 	print l

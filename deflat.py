@@ -78,6 +78,7 @@ for night in night_dirs:
 		exposures = glob.glob(obj+'/*ovscorr_debiased.fits')
 			
 		for fpath in exposures:
+			print fpath
 		
 			flat = None
 			
@@ -94,8 +95,8 @@ for night in night_dirs:
 			savepath = fpath[:-5] + '_deflat.fits'
 			
 			#skip if the deflattened file already exists
-			#if os.path.exists(savepath):
-			#	continue
+			if os.path.exists(savepath):
+				continue
 			
 			copyfile(fpath, savepath)
 			
@@ -124,10 +125,20 @@ for night in night_dirs:
 				pass
 				
 				
-			""" Very ugly, but will fix all the wrong header filter labels here"""
+			""" Very ugly, but will fix all the wrong header filter labels here. NOTE. The filters for Night1 are as
+			they are listed in the observing log. ie. they are incorrect"""
 			if fpath=='/mirror2/scratch/hbarker/Orsola_2.3m_ANU/Sorted/Night1/st_wd1056_exp34-46/T2M3Im-20120515.112830-0034_ovscorr_debiased.fits':
 				filtername='U'	
-			
+				
+			if fpath=='/mirror2/scratch/hbarker/Orsola_2.3m_ANU/Sorted/Night1/Lo5/T2M3Im-20120515.091312-0019_ovscorr_debiased.fits':
+				filtername='V'	
+				
+			if fpath=='/mirror2/scratch/hbarker/Orsola_2.3m_ANU/Sorted/Night1/Lo5/T2M3Im-20120515.091422-0020_ovscorr_debiased.fits':
+				filtername='V'	
+				
+			if fpath=='/mirror2/scratch/hbarker/Orsola_2.3m_ANU/Sorted/Night1/Lo5/T2M3Im-20120515.092129-0021_ovscorr_debiased.fits':
+				filtername='V'
+				
 			if fpath=='/mirror2/scratch/hbarker/Orsola_2.3m_ANU/Sorted/Night1/Lo5/T2M3Im-20120515.103606-0022_ovscorr_debiased.fits':
 				filtername='B'	
 				
@@ -227,10 +238,11 @@ for night in night_dirs:
 				print fpath
 			
 				print 'Master flat does not have the same dimensions as the img'
-				print 'Master flat: ', len(flat[0]), len(flat[1])
 				print fpath
-				print len(img[0]), len(img[1])
-				sys.exit()
+				print 'Img: ', len(img[0]), len(img[1])
+				print 'Master flat: ', len(flat[0]), len(flat[1])
+				#sys.exit()
+				raw_input('Press any key to continue')
 				
 				
 			#divide the img by the masterflat

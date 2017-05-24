@@ -40,6 +40,7 @@ if not os.path.exists(standard_fpath):
 
 print 'Reading in data'
 with open(standard_fpath, 'r') as f:
+	# star, night, frame_num, filter, exptime, airmass, daophot_mag, err, mag, err
 	in_tab = [line.strip().split("\t") for line in f]
 
 
@@ -51,7 +52,22 @@ in_data = [line for line in in_data if line[4]!='Daophot failed' ]
 in_data = [line for line in in_data if line[4]!='PSF failed' ]
 
 
+#manually remove bad lines
+in_data = [line for line in in_data if line[2]!='215']
+in_data = [line for line in in_data if line[2]!='188']
+in_data = [line for line in in_data if line[2]!='271']
+in_data = [line for line in in_data if line[2]!='272']
+in_data = [line for line in in_data if line[2]!='66']
+in_data = [line for line in in_data if line[2]!='70']
+in_data = [line for line in in_data if line[2]!='78']
+in_data = [line for line in in_data if line[2]!='82']
+in_data = [line for line in in_data if line[2]!='141']
+in_data = [line for line in in_data if line[2]!='219']
+in_data = [line for line in in_data if line[2]!='134']
+
+
 rec_arr = make_recarray(in_data, colnames)
+print colnames
 print
 
 
@@ -59,7 +75,7 @@ print
 #put data into a dictionary, with target names as keys
 print 'Sorting'
 tab = dict()
-target_names = set(rec_arr['pn'])
+target_names = set(rec_arr['star'])
 
 for target in target_names:
 	print target
@@ -74,6 +90,9 @@ print
 true_colours = { 'MCT2019': [12.185, 13.397, 13.685, 13.946], '111-1925':[13.045, 12.783, 12.387, 11.904], 'wd1056':[12.775, 13.86, 14.047, 14.350], 'G93-48':[11.942, 12.732, 12.743, 12.938], 'LSE44':[11.042, 12.194, 12.459, 12.604], '121-968':[9.16, 10.071, 10.256, 10.429]  }	
 
  
+
+ 
+ 
 #need to solve the following equations for each filter on each night
 #
 # B = O_B + b + C_B*(B-V) - KB*Z   
@@ -84,6 +103,7 @@ true_colours = { 'MCT2019': [12.185, 13.397, 13.685, 13.946], '111-1925':[13.045
 # Z = airmass
 # B-V is the colour on the standard system
 
+savetab=[]
 print 'Calculating transformation coefficients'
 filternames = ['U', 'B', 'V', 'I']
 nights = ['Night1', 'Night2', 'Night3']
@@ -95,7 +115,8 @@ for night in nights:
 	
 		filter_data = []
 		for target in tab:
-		
+			print target
+
 			
 			#get the 'true' observed mags from the Overview sheet
 			if filtername =='U':
@@ -127,13 +148,28 @@ for night in nights:
 				continue
 			
 			for line in cut_mags:
-				print target, line['filter'], line['airmass'], line['mag']
+				print target, line['filter'], line['airmass'], true_mag, line['mag']
 				filter_data.append( [ float(line['airmass']), float(line['mag']), float(line['mag_err']), true_mag, colour] )
 			print	
 				
 				 
 		if len(filter_data)==0:
-			continue		
+			print 'No stars'
+			print
+			continue
+			
+			
+		print 'Number of stars:', len(filter_data)	
+		print 
+		print	
+		
+		plt.figure()
+		airmasses = [ l[0] for l in filter_data]
+		mags = [ l[1]-l[3] for l in filter_data]
+		errs = [ l[2] for l in filter_data]
+		plt.errorbar(airmasses, mags, yerr=errs, fmt='o' )
+		plt.show()
+		
 
 		
 		#Calculate the transformation coefficients O, C, K using a least-squares method
@@ -156,10 +192,12 @@ for night in nights:
 		Kerr = perr[2]
 
 		
-		print night, ' Filter: ', filtername
+		#print night, ' Filter: ', filtername
 		print 'O: ', O, ' +/- ', Oerr
 		print 'K: ', K, ' +/- ', Kerr
 		print 'C :', C, ' +/- ', Cerr
+		
+
 
 
 
@@ -185,10 +223,22 @@ for night in nights:
 		plt.xlabel('Airmass')
 		plt.title(night+','+filtername)
 		plt.show()
+		#print
+
+		savetab.append(night+'	'+filtername+'	'+str(O)+'	'+str(Oerr)+'	'+str(K)+'	'+str(Kerr)+'	'+str(C)+'	'+str(Cerr)+'	\n')
 		
-		print
+		
 
-
+		
+#write to file
+print 'Saving'
+savepath = working_dir+'/calib_coeffs.tab'
+with open(savepath, 'w+') as f:
+	#colnames = Night Filter O Oerr K Kerr C Cerr
+	f.write('Night	Filter	O	O_err	K	K_err	C	C_err	\n')
+	for line in savetab:
+		f.write(line)
+		
  
  
  
