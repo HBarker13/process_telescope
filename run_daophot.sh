@@ -79,16 +79,36 @@ f=$3
 	fwhm9=$(echo $fwhm*9.0 | bc)
 	fwhm10=$(echo $fwhm*10.0 | bc)
 	
+
+	
+#create fwhm commands to feed into daophot
+#create fwhm commands to feed into daophot
+#maximum allowed values:
+#fw < 15
+#fi <10
+#ps<35
+#is < OS
+#os < n/a	
+	
 	
 #create fwhm commands to feed into daophot
 	fwhm_cmd='FWHM='$fwhm
-	fit_cmd='FIT='$fwhm2
-	psf_cmd='PSF='$fwhm4
-	
 	inner_rad='IS='$fwhm4
 	outer_rad='OS='$fwhm5
 
 
+	if [ $(echo "$fwhm2>10.0"|bc) -eq 1 ]; then
+		fit_cmd='FIT=10.0'
+	else
+		fit_cmd='FIT='$fwhm2
+	fi
+	
+	if [ $(echo "$fwhm4>35.0"|bc) -eq 1 ]; then 
+		psf_cmd='PSF=35.0'
+	else
+		psf_cmd='PSF='$fwhm4
+	fi
+	
 
 
 #need to write these to the files

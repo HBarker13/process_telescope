@@ -71,6 +71,8 @@ do
 	fwhm2=$(echo $fwhm*2.0 | bc)
 	fwhm4=$(echo $fwhm*4.0 | bc)
 	fwhm5=$(echo $fwhm*5.0 | bc)
+	fwhm6=$(echo $fwhm*6.0 | bc)
+	fwhm7=$(echo $fwhm*7.0 | bc)
 	
 	
 #create fwhm commands to feed into daophot
@@ -85,8 +87,8 @@ do
 	
 #create fwhm commands to feed into daophot
 	fwhm_cmd='FWHM='$fwhm
-	inner_rad='IS='$fwhm4
-	outer_rad='OS='$fwhm5
+	inner_rad='IS='$fwhm5
+	outer_rad='OS='$fwhm6
 
 
 	if [ $(echo "$fwhm2>10.0"|bc) -eq 1 ]; then
@@ -95,6 +97,7 @@ do
 		fit_cmd='FIT='$fwhm2
 	fi
 	
+#HSOULD BE FWHM4
 	if [ $(echo "$fwhm4>35.0"|bc) -eq 1 ]; then 
 		psf_cmd='PSF=35.0'
 	else

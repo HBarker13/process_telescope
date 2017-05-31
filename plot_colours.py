@@ -44,11 +44,20 @@ for e in E_BmV:
 
 	print 'E(B-V):', e
 	red_spectrum = spectrum *  S.Extinction(e, 'mwavg')
+	
+	#plt.figure()
+	#plt.plot(red_spectrum.wave, red_spectrum.flux)
+	#plt.xlabel(red_spectrum.waveunits)
+	#plt.ylabel(red_spectrum.fluxunits)
+	#plt.xlim(3000, 10000)
+	#plt.ylim(0, 0.6e10)
+	#plt.show()
 		
 	obs_U = S.Observation(red_spectrum, S.ObsBandpass('U'))
 	obs_B = S.Observation(red_spectrum, S.ObsBandpass('B'))
 	obs_V = S.Observation(red_spectrum, S.ObsBandpass('V'))
 	obs_I = S.Observation(red_spectrum, S.ObsBandpass('I'))
+
 
 	
 	U_min_B = obs_U.effstim(magsystem) - obs_B.effstim(magsystem)

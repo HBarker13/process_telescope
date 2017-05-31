@@ -148,8 +148,11 @@ for night in nights:
 				continue
 			
 			for line in cut_mags:
+				#print target, line['filter'], line['airmass'], true_mag, line['daophot_mag']
 				print target, line['filter'], line['airmass'], true_mag, line['mag']
-				filter_data.append( [ float(line['airmass']), float(line['mag']), float(line['mag_err']), true_mag, colour] )
+				
+				filter_data.append( [ float(line['airmass']), float(line['mag']), float(line['mag_err']), true_mag, colour] )	
+				#filter_data.append( [ float(line['airmass']), float(line['daophot_mag']), float(line['daophot_err']), true_mag, colour] )
 			print	
 				
 				 
@@ -163,12 +166,12 @@ for night in nights:
 		print 
 		print	
 		
-		plt.figure()
-		airmasses = [ l[0] for l in filter_data]
-		mags = [ l[1]-l[3] for l in filter_data]
-		errs = [ l[2] for l in filter_data]
-		plt.errorbar(airmasses, mags, yerr=errs, fmt='o' )
-		plt.show()
+		#plt.figure()
+		#airmasses = [ l[0] for l in filter_data]
+		#mags = [ l[1]-l[3] for l in filter_data]
+		#errs = [ l[2] for l in filter_data]
+		#plt.errorbar(airmasses, mags, yerr=errs, fmt='o' )
+		#plt.show()
 		
 
 		

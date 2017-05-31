@@ -71,6 +71,7 @@ for sheetname in info:
 	if sheetname=='Overview':
 		continue
 
+	if sheetname!='wd1056' : continue
 
 
 	print sheetname	
@@ -84,7 +85,9 @@ for sheetname in info:
 	
 	#loop over each entry in the sheet. ie. loop of info of each frame
 	for line in data_arr:
-	
+
+		if line['Filter']!='V': continue	
+
 
 		#clear daophot junk
 		print 'Calling tidy_daophot.py'
@@ -146,15 +149,19 @@ for sheetname in info:
 		if ref_tab_flag==True: continue
 			
 			
-			
+		#if float(line['fwhm'])>5.0:
+		#	continue	
 			
 			
 			
 		#IF FWHM>5.0, need to change the value as daophot can't handle it
-		if float(line['fwhm'])>5.0:
-			fwhm = '5.0'
-		else:
-			fwhm = line['fwhm']
+		#if float(line['fwhm'])>5.0:
+		#	fwhm = '5.0'
+		#else:
+		#	fwhm = line['fwhm']
+		
+		
+		fwhm = line['fwhm']
 					
 			
 		#call run_daophot.sh: pass the frame number, fwhm measured in iraf and filepath	
